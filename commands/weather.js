@@ -2,8 +2,7 @@ require("dotenv").config();
 const axios = require("axios");
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const API_KEY = process.env.OPENWEATHER_API_KEY;
-const lat = 28.0394654;
-const lon = -81.9498042;
+const { lat, lon } = require("../settings.json");
 
 let weatherData;
 let output = "";
