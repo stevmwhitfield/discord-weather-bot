@@ -1,7 +1,11 @@
 require("dotenv").config();
 const fs = require("node:fs");
+const { MongoClient } = require("mongodb");
 const { Client, Intents, Collection } = require("discord.js");
 const token = process.env.DISCORD_TOKEN;
+
+const mongoClient = new MongoClient(process.env.MONGODB_URI);
+await mongoClient.connect();
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
@@ -28,29 +32,29 @@ for (const file of eventFiles) {
   }
 }
 
-client.once("ready", (c) => {
-  console.log(`Ready! Logged in as ${c.user.tag}`);
-});
+// client.once("ready", (c) => {
+//   console.log(`Ready! Logged in as ${c.user.tag}`);
+// });
 
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isCommand()) return;
+// client.on("interactionCreate", async (interaction) => {
+//   if (!interaction.isCommand()) return;
 
-  console.log(
-    `${interaction.user.tag} in #${interaction.channel.name} triggered an interaction.`
-  );
+//   console.log(
+//     `${interaction.user.tag} in #${interaction.channel.name} triggered an interaction.`
+//   );
 
-  const command = client.commands.get(interaction.commandName);
+//   const command = client.commands.get(interaction.commandName);
 
-  if (!command) return;
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(error);
-    await interaction.reply({
-      content: "There was an error while executing this command!",
-      ephemeral: true,
-    });
-  }
-});
+//   if (!command) return;
+//   try {
+//     await command.execute(interaction);
+//   } catch (error) {
+//     console.error(error);
+//     await interaction.reply({
+//       content: "There was an error while executing this command!",
+//       ephemeral: true,
+//     });
+//   }
+// });
 
 client.login(token);
