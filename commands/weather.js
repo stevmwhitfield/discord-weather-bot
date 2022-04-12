@@ -1,16 +1,12 @@
 require("dotenv").config();
 const axios = require("axios");
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { MongoClient } = require("mongodb");
+const mongoClient = require("../mongodb/dbConnect.js").client;
 const API_KEY = process.env.OPENWEATHER_API_KEY;
-
-const mongoClient = new MongoClient(process.env.MONGODB_URI);
 
 let lat, lon;
 const getGeo = async (id) => {
   try {
-    await mongoClient.connect();
-
     const db = mongoClient.db("guild-settings");
     const settings = db.collection("settings");
 
@@ -26,8 +22,6 @@ const getGeo = async (id) => {
     }
   } catch (err) {
     console.log(err);
-  } finally {
-    await mongoClient.close();
   }
 };
 

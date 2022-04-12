@@ -1,13 +1,9 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
-const { MongoClient } = require("mongodb");
-
-const mongoClient = new MongoClient(process.env.MONGODB_URI);
+const mongoClient = require("../mongodb/dbConnect.js").client;
 
 let guildSettings;
 const getSettings = async (id) => {
   try {
-    await mongoClient.connect();
-
     const db = mongoClient.db("guild-settings");
     const settings = db.collection("settings");
 
@@ -22,8 +18,6 @@ const getSettings = async (id) => {
     }
   } catch (err) {
     console.log(err);
-  } finally {
-    await mongoClient.close();
   }
 };
 
