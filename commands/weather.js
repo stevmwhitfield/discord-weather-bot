@@ -1,8 +1,35 @@
 require("dotenv").config();
 const axios = require("axios");
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { MongoClient } = require("mongodb");
 const API_KEY = process.env.OPENWEATHER_API_KEY;
-const { lat, lon } = require("../settings.json");
+
+const mongoClient = new MongoClient(process.env.MONGODB_URI);
+
+let lat, lon;
+const getGeo = async (id) => {
+  try {
+    await mongoClient.connect();
+
+    const db = mongoClient.db("guild-settings");
+    const settings = db.collection("settings");
+
+    const query = { guildId: id };
+    settings.findOne(query, (err, data) => {
+      if (err) throw err;
+      lat = data.lat;
+      lon = data.lon;
+    });
+
+    if ((await settings.countDocuments()) === 0) {
+      console.log("No documents found!");
+    }
+  } catch (err) {
+    console.log(err);
+  } finally {
+    await mongoClient.close();
+  }
+};
 
 let weatherData;
 let output = "";
@@ -47,13 +74,18 @@ const getWeatherData = async () => {
     })
     .finally(() => console.log("GET request complete."));
 };
-getWeatherData();
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("weather")
     .setDescription("Replies with weather data."),
   async execute(interaction) {
-    await interaction.reply(output);
+    await getGeo(interaction.guildId);
+    if (lat && lon) {
+      await getWeatherData();
+      await interaction.reply(output);
+    } else {
+      await interaction.reply("Failed to get weather data.");
+    }
   },
 };

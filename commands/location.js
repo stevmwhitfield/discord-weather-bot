@@ -1,39 +1,58 @@
+require("dotenv").config();
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { MongoClient } = require("mongodb");
 const axios = require("axios");
 const fs = require("node:fs");
 
-require("dotenv").config();
 const API_KEY = process.env.OPENWEATHER_API_KEY;
 
-const settings = require("../settings.json");
-const newSettings = JSON.parse(JSON.stringify(settings));
+const mongoClient = new MongoClient(process.env.MONGODB_URI);
+
+const putLocation = async (id, newLocation) => {
+  try {
+    await axios
+      .get(
+        `http://api.openweathermap.org/geo/1.0/direct?q=${newLocation}&limit=1&appid=${API_KEY}`
+      )
+      .then(async (res) => {
+        try {
+          if (res.data.length > 0) {
+            const { name, lat, lon, state } = res.data[0];
+            let tempName = name + ", " + state;
+            //-----------------------------------------------------
+            await mongoClient.connect();
+
+            const db = mongoClient.db("guild-settings");
+            const settings = db.collection("settings");
+
+            const query = { guildId: id };
+            settings.updateOne(query, {
+              $set: { location: tempName, lat, lon },
+            });
+
+            if ((await settings.countDocuments()) === 0) {
+              console.log("No documents found!");
+            }
+            //-----------------------------------------------------
+            output = "New location set: " + tempName;
+          } else {
+            output = "Invalid location. Please enter the name of a city.";
+          }
+        } catch (error) {
+          console.log(error);
+        } finally {
+          await mongoClient.close();
+        }
+      })
+      .catch((err) => console.log(err));
+    //--------------------------------
+  } catch (err) {
+    console.log(err);
+  }
+};
 
 let tempLocation;
 let output = "";
-const updateLocation = async () => {
-  await axios
-    .get(
-      `http://api.openweathermap.org/geo/1.0/direct?q=${tempLocation}&limit=1&appid=${API_KEY}`
-    )
-    .then((res) => {
-      try {
-        const { name, lat, lon, state } = res.data[0];
-        newSettings.location = name + ", " + state;
-        newSettings.lat = lat;
-        newSettings.lon = lon;
-        output += "New location set: " + tempLocation;
-      } catch (error) {
-        console.log(error);
-      }
-    })
-    .then(() => {
-      fs.writeFile("settings.json", JSON.stringify(newSettings), (err) => {
-        if (err) throw err;
-        console.log("Updated location: " + newSettings.location + ".");
-      });
-    })
-    .catch((err) => console.log(err));
-};
 
 module.exports = {
   data: new SlashCommandBuilder()
@@ -44,7 +63,7 @@ module.exports = {
     ),
   async execute(interaction) {
     tempLocation = interaction.options.getString("city");
-    updateLocation();
-    await interaction.reply("Updating location... " + output);
+    await putLocation(interaction.guildId, tempLocation);
+    await interaction.reply(output);
   },
 };
