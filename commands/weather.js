@@ -55,15 +55,11 @@ const getWeatherData = async () => {
         let weatherEmbed = new MessageEmbed()
           .setColor("#5c3fb3")
           .setTitle(String(hourlyTime))
+          .setDescription(weather[0].main)
           .setFooter({ text: `${"\u2800".repeat(50)}` })
           .addFields(
-            { name: "Description", value: weather[0].main, inline: true },
             { name: "Temperature", value: temp + " °F", inline: true },
             { name: "Feels Like", value: feels_like + " °F", inline: true },
-            { name: "\u200b", value: "\u200b" },
-            { name: "Chance of Rain", value: pop + "%", inline: true },
-            { name: "Humidity", value: humidity + "%", inline: true },
-            { name: "UV Index", value: String(uvi), inline: true },
             { name: "\u200b", value: "\u200b" },
             { name: "Wind Speed", value: wind_speed + " mph", inline: true },
             {
@@ -72,7 +68,11 @@ const getWeatherData = async () => {
                 ? weatherData.hourly[i].wind_gust + " mph"
                 : "N/A",
               inline: true,
-            }
+            },
+            { name: "\u200b", value: "\u200b" },
+            { name: "Chance of Rain", value: pop + "%", inline: true },
+            { name: "Humidity", value: humidity + "%", inline: true },
+            { name: "UV Index", value: String(uvi), inline: true }
           );
         weatherEmbeds.push(weatherEmbed);
         // output += "Time: " + hourlyTime + "\n";

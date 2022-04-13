@@ -1,42 +1,40 @@
 require("dotenv").config();
 const { SlashCommandBuilder } = require("@discordjs/builders");
 const { MessageEmbed } = require("discord.js");
-const mongoClient = require("../mongodb/dbConnect.js").client;
-
-let infoEmbed;
-const getInfo = async (id) => {
-  try {
-    const db = mongoClient.db("guild-settings");
-    const settings = db.collection("settings");
-
-    const query = { guildId: id };
-    settings.findOne(query, (err, data) => {
-      if (err) throw err;
-      infoEmbed = new MessageEmbed()
-        .setColor("#5c3fb3")
-        .setTitle(data.location)
-        .addFields(
-          { name: "Latitude", value: String(data.lat), inline: true },
-          { name: "Longitude", value: String(data.lon), inline: true }
-        );
-    });
-
-    if ((await settings.countDocuments()) === 0) {
-      console.log("No documents found!");
-    }
-  } catch (err) {
-    console.log(err);
-  }
-};
 
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("info")
-    .setDescription("Displays information."),
+    .setDescription("Displays information about the bot."),
   async execute(interaction) {
-    await getInfo(interaction.guildId);
-    if (infoEmbed) {
-      await interaction.reply({ embeds: [infoEmbed] });
-    } else await interaction.reply("Failed to get info.");
+    const infoEmbed = new MessageEmbed()
+      .setColor("#5c3fb3")
+      .setTitle("About Weather")
+      .setDescription(
+        "'Weather' is a simple bot made to report the weather in 4-hour increments from the current hour." +
+          "\n\n" +
+          "Weather data is fetched in real-time from https://openweathermap.org/api."
+      )
+      .setFields(
+        {
+          name: "Commands",
+          value: "All available commands and what they do.",
+        },
+        { name: "/info", value: "Displays information about the bot." },
+        {
+          name: "/view <setting>",
+          value: "Displays the selected server settings.",
+        },
+        {
+          name: "/location <city>",
+          value: "Sets the current location to the specified city.",
+        },
+        {
+          name: "/weather",
+          value:
+            "Displays weather data for the next four hours, starting from the current hour.",
+        }
+      );
+    await interaction.reply({ embeds: [infoEmbed] });
   },
 };
