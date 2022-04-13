@@ -5,7 +5,6 @@ const { Routes } = require("discord-api-types/v9");
 
 const token = process.env.DISCORD_TOKEN;
 const clientId = process.env.DISCORD_CLIENT_ID;
-// const guildId = process.env.DISCORD_GUILD_ID;
 
 const commands = [];
 const commandFiles = fs
