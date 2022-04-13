@@ -15,6 +15,7 @@ module.exports = {
           "\n\n" +
           "Weather data is fetched in real-time from https://openweathermap.org/api."
       )
+      .setFooter({ text: "Created by Steven Whitfield." })
       .setFields(
         {
           name: "Commands",
