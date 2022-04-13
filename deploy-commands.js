@@ -2,34 +2,10 @@ require("dotenv").config();
 const fs = require("node:fs");
 const { REST } = require("@discordjs/rest");
 const { Routes } = require("discord-api-types/v9");
-const mongoClient = require("./mongodb/dbConnect.js").client;
 
 const token = process.env.DISCORD_TOKEN;
 const clientId = process.env.DISCORD_CLIENT_ID;
-const guildId = process.env.DISCORD_GUILD_ID;
-
-const guilds = [];
-const getGuilds = async () => {
-  try {
-    await mongoClient.connect();
-    const db = mongoClient.db("guild-settings");
-    const settings = db.collection("settings");
-
-    const cursor = settings.find();
-    cursor.forEach((guild) => {
-      guilds.push(guild);
-    });
-  } catch (err) {
-    console.log(err);
-  }
-};
-
-const registerCommands = async () => {
-  await getGuilds();
-  console.log(guilds);
-};
-
-registerCommands();
+// const guildId = process.env.DISCORD_GUILD_ID;
 
 const commands = [];
 const commandFiles = fs
@@ -44,6 +20,6 @@ for (const file of commandFiles) {
 const rest = new REST({ version: "9" }).setToken(token);
 
 rest
-  .put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
+  .put(Routes.applicationCommands(clientId), { body: commands })
   .then(() => console.log("Successfully registered application commands."))
   .catch(console.error);

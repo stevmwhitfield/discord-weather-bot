@@ -2,7 +2,7 @@ module.exports = {
   name: "interactionCreate",
   async execute(client, interaction) {
     console.log(
-      `${interaction.user.tag} in #${interaction.channel.name} triggered an interaction.`
+      `${interaction.user.tag} from ${interaction.guild} triggered an interaction in #${interaction.channel.name}.`
     );
 
     const command = client.commands.get(interaction.commandName);

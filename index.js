@@ -3,6 +3,15 @@ const fs = require("node:fs");
 const { Client, Intents, Collection } = require("discord.js");
 const mongoClient = require("./mongodb/dbConnect.js").client;
 
+const connectMongo = async () => {
+  try {
+    await mongoClient.connect();
+  } catch (err) {
+    console.log(err);
+  }
+};
+connectMongo();
+
 const token = process.env.DISCORD_TOKEN;
 
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -61,8 +70,6 @@ const deleteGuild = async (guild) => {
     } catch (err) {
       console.log(err);
     }
-  } else {
-    console.log("Left a guild (possible outage): " + guild.name);
   }
 };
 
