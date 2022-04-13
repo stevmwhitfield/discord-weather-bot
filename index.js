@@ -37,6 +37,7 @@ const createGuild = async (guild) => {
 
     settings.insertOne({
       guildId: guild.id,
+      guildName: guild.name,
       location: "Lakeland, Florida",
       lat: 28.0394654,
       lon: -81.9498042,
