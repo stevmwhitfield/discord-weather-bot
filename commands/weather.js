@@ -102,6 +102,7 @@ module.exports = {
   async execute(interaction) {
     await getGeo(interaction.guildId);
     if (lat && lon) {
+      weatherEmbeds = [];
       await getWeatherData();
       // await interaction.reply(output);
       await interaction.reply({ embeds: [...weatherEmbeds] });
