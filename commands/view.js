@@ -1,4 +1,5 @@
 const { SlashCommandBuilder } = require("@discordjs/builders");
+const { MessageEmbed } = require("discord.js");
 const mongoClient = require("../mongodb/dbConnect.js").client;
 
 let guildSettings;
@@ -24,12 +25,13 @@ const getSettings = async (id) => {
 module.exports = {
   data: new SlashCommandBuilder()
     .setName("view")
-    .setDescription("Displays information about a setting.")
+    .setDescription("Displays the value(s) of the server's settings.")
     .addStringOption((option) =>
       option
         .setName("option")
         .setDescription("The setting you want to view.")
         .setRequired(true)
+        .addChoice("all", "all")
         .addChoice("location", "location")
         .addChoice("latitude", "lat")
         .addChoice("longitude", "lon")
@@ -38,19 +40,48 @@ module.exports = {
     await getSettings(interaction.guildId);
 
     if (guildSettings) {
+      let viewEmbed;
       switch (interaction.options.getString("option")) {
+        case "all":
+          viewEmbed = new MessageEmbed()
+            .setColor("#5c3fb3")
+            .setTitle("Server Settings")
+            .addFields(
+              { name: "Location", value: guildSettings.location },
+              {
+                name: "Latitude",
+                value: String(guildSettings.lat),
+                inline: true,
+              },
+              {
+                name: "Longitude",
+                value: String(guildSettings.lon),
+                inline: true,
+              }
+            );
+          break;
         case "location":
-          await interaction.reply("Location: " + guildSettings.location);
+          viewEmbed = new MessageEmbed()
+            .setColor("#5c3fb3")
+            .setTitle("Server Settings")
+            .addFields({ name: "Location", value: guildSettings.location });
           break;
         case "lat":
-          await interaction.reply("Latitude: " + guildSettings.lat);
+          viewEmbed = new MessageEmbed()
+            .setColor("#5c3fb3")
+            .setTitle("Server Settings")
+            .addFields({ name: "Latitude", value: String(guildSettings.lat) });
           break;
         case "lon":
-          await interaction.reply("Longitude: " + guildSettings.lon);
+          viewEmbed = new MessageEmbed()
+            .setColor("#5c3fb3")
+            .setTitle("Server Settings")
+            .addFields({ name: "Longitude", value: String(guildSettings.lon) });
           break;
         default:
           console.warn("view.js: case not found.");
       }
+      await interaction.reply({ embeds: [viewEmbed] });
     } else {
       await interaction.reply("Failed to get guild settings.");
     }

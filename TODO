@@ -1,0 +1,3 @@
+Change `commands/info` to display information about the bot instead of settings.
+
+Clear embeds array before calling `getWeatherData()` in `commands/weather`.
