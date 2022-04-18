@@ -37,7 +37,6 @@ const getWeatherData = async () => {
     .then((res) => {
       weatherData = res.data;
 
-      // output += "-- Hourly Weather --\n";
       for (let i = 0; i < 4; i++) {
         let { dt, temp, feels_like, humidity, uvi, wind_speed, weather, pop } =
           weatherData.hourly[i];
@@ -70,26 +69,18 @@ const getWeatherData = async () => {
               inline: true,
             },
             { name: "\u200b", value: "\u200b" },
-            { name: "Chance of Rain", value: pop + "%", inline: true },
+            {
+              name: "Chance of Rain",
+              value: Math.round(pop * 100) + "%",
+              inline: true,
+            },
             { name: "Humidity", value: humidity + "%", inline: true },
             { name: "UV Index", value: String(uvi), inline: true }
           );
         weatherEmbeds.push(weatherEmbed);
-        // output += "Time: " + hourlyTime + "\n";
-        // output += weather[0].main + "\n";
-        // output += "Temperature: " + temp + " °F\n";
-        // output += "Feels like: " + feels_like + " °F\n";
-        // output += "Humidity: " + humidity + "%\n";
-        // output += "UV Index: " + uvi + "\n";
-        // output += "Wind speed: " + wind_speed + " mph\n";
-        // if (weatherData.hourly[i].wind_gust)
-        //   output += "Wind gusts: " + weatherData.hourly[i].wind_gust + " mph\n";
-        // output += "Chance of rain: " + pop + "%\n";
-        // output += "\n";
       }
     })
     .catch((error) => {
-      // output = "Oops. Something went wrong. Try again or come back later.";
       console.error(error);
     })
     .finally(() => console.log("GET request complete."));
@@ -104,7 +95,6 @@ module.exports = {
     if (lat && lon) {
       weatherEmbeds = [];
       await getWeatherData();
-      // await interaction.reply(output);
       await interaction.reply({ embeds: [...weatherEmbeds] });
     } else {
       await interaction.reply("Failed to get weather data. Please try again");
