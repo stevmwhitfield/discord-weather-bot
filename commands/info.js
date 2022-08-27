@@ -36,6 +36,6 @@ module.exports = {
             "Displays weather data for the next four hours, starting from the current hour.",
         }
       );
-    await interaction.reply({ embeds: [infoEmbed] });
+    await interaction.reply({ embeds: [infoEmbed], ephemeral: true });
   },
 };

@@ -58,6 +58,6 @@ module.exports = {
   async execute(interaction) {
     tempLocation = interaction.options.getString("city");
     await putLocation(interaction.guildId, tempLocation);
-    await interaction.reply(output);
+    await interaction.reply(output, { ephemeral: true });
   },
 };

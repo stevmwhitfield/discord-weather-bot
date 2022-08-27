@@ -95,9 +95,11 @@ module.exports = {
     if (lat && lon) {
       weatherEmbeds = [];
       await getWeatherData();
-      await interaction.reply({ embeds: [...weatherEmbeds] });
+      await interaction.reply({ embeds: [...weatherEmbeds], ephemeral: true });
     } else {
-      await interaction.reply("Failed to get weather data. Please try again");
+      await interaction.reply("Failed to get weather data. Please try again", {
+        ephemeral: true,
+      });
     }
   },
 };

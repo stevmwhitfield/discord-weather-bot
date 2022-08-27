@@ -81,9 +81,11 @@ module.exports = {
         default:
           console.warn("view.js: case not found.");
       }
-      await interaction.reply({ embeds: [viewEmbed] });
+      await interaction.reply({ embeds: [viewEmbed], ephemeral: true });
     } else {
-      await interaction.reply("Failed to get guild settings.");
+      await interaction.reply("Failed to get guild settings.", {
+        ephemeral: true,
+      });
     }
   },
 };
